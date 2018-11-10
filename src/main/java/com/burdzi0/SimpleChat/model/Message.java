@@ -1,0 +1,73 @@
+package com.burdzi0.SimpleChat.model;
+
+import javax.persistence.*;
+import java.util.Date;
+import java.util.Objects;
+
+@Entity
+public class Message {
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+
+	private String author;
+	private String content;
+
+	@Column(name = "sending_timestamp")
+	private Date sendingTime;
+
+	public Message(String author, String content, Date sendingTime) {
+		this.author = author;
+		this.content = content;
+		this.sendingTime = sendingTime;
+	}
+
+	public Message() {
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public String getAuthor() {
+		return author;
+	}
+
+	public void setAuthor(String author) {
+		this.author = author;
+	}
+
+	public String getContent() {
+		return content;
+	}
+
+	public void setContent(String content) {
+		this.content = content;
+	}
+
+	public Date getSendingTime() {
+		return sendingTime;
+	}
+
+	public void setSendingTime(Date sendingTime) {
+		this.sendingTime = sendingTime;
+	}
+
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null || obj.getClass() != this.getClass()) return false;
+		Message objDate = (Message) obj;
+		if (!objDate.getId().equals(id)) return false;
+		if (!objDate.getSendingTime().equals(sendingTime)) return false;
+		if (!objDate.author.equals(author)) return false;
+		return objDate.getContent().equals(content);
+	}
+
+
+	@Override
+	public int hashCode() {
+		return id.hashCode() * author.hashCode() * content.hashCode() * sendingTime.hashCode();
+	}
+}
