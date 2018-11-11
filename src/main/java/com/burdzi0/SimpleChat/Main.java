@@ -4,9 +4,7 @@ import com.burdzi0.SimpleChat.model.Author;
 import com.burdzi0.SimpleChat.model.Message;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 public class Main {
 
