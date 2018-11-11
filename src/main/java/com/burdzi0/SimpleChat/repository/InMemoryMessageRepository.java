@@ -10,6 +10,11 @@ public class InMemoryMessageRepository implements MessageRepository {
 	private EntityManager manager;
 
 	@Override
+	public void saveMessage(Message message) {
+
+	}
+
+	@Override
 	public Message findMessageById(Long id) {
 		return manager.find(Message.class, id);
 	}

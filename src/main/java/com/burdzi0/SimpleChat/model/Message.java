@@ -11,13 +11,14 @@ public class Message {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	private String author;
+	@ManyToOne(cascade = CascadeType.PERSIST)
+	private Author author;
 	private String content;
 
 	@Column(name = "sending_timestamp")
 	private Date sendingTime;
 
-	public Message(String author, String content, Date sendingTime) {
+	public Message(Author author, String content, Date sendingTime) {
 		this.author = author;
 		this.content = content;
 		this.sendingTime = sendingTime;
@@ -30,11 +31,15 @@ public class Message {
 		return id;
 	}
 
-	public String getAuthor() {
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public Author getAuthor() {
 		return author;
 	}
 
-	public void setAuthor(String author) {
+	public void setAuthor(Author author) {
 		this.author = author;
 	}
 
@@ -65,9 +70,18 @@ public class Message {
 		return objDate.getContent().equals(content);
 	}
 
-
 	@Override
 	public int hashCode() {
 		return id.hashCode() * author.hashCode() * content.hashCode() * sendingTime.hashCode();
+	}
+
+	@Override
+	public String toString() {
+		return "Message{" +
+				"id=" + id +
+				", author=" + author.getUsername() +
+				", content='" + content + '\'' +
+				", sendingTime=" + sendingTime +
+				'}';
 	}
 }
