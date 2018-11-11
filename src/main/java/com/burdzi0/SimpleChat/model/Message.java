@@ -1,10 +1,12 @@
 package com.burdzi0.SimpleChat.model;
 
+import com.burdzi0.SimpleChat.listener.Slf4jMessageLogListener;
+
 import javax.persistence.*;
 import java.util.Date;
-import java.util.Objects;
 
 @Entity
+@EntityListeners(Slf4jMessageLogListener.class)
 public class Message {
 
 	@Id
