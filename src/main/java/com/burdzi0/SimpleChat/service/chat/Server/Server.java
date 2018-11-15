@@ -2,6 +2,7 @@ package com.burdzi0.SimpleChat.service.chat.Server;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.StandardSocketOptions;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.channels.SelectionKey;
@@ -11,6 +12,7 @@ import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 public class Server {
 
@@ -22,6 +24,8 @@ public class Server {
 
 		Selector selector = Selector.open();
 		serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
+
+		Set<SocketChannel> openedChannels = new CopyOnWriteArraySet<>();
 
 		while (true) {
 			System.out.println("We are waiting for events...");
@@ -45,10 +49,15 @@ public class Server {
 					channel.read(buffer);
 					buffer.flip();
 					CharBuffer charBuffer = StandardCharsets.UTF_8.decode(buffer);
-					System.out.printf("Message: %s", new String(charBuffer.array()));
+					System.out.printf("Message: %s", charBuffer.toString());
+					channel.setOption(StandardSocketOptions.SO_KEEPALIVE, true);
+					broadcast(openedChannels, charBuffer.toString());
 					buffer.clear();
+					openedChannels.add(channel);
 					selectedKeys.remove(key);
-					channel.register(selector, SelectionKey.OP_WRITE);
+					if (!openedChannels.contains(channel)){
+						channel.register(selector, SelectionKey.OP_WRITE);
+					}
 				} else if (key.isWritable()) {
 					System.out.println("Writing to the connected SocketChannel");
 					SocketChannel channel = (SocketChannel) key.channel();
@@ -58,10 +67,16 @@ public class Server {
 					System.out.println("Response sent");
 					charBuffer.clear();
 					selectedKeys.remove(key);
-					key.cancel();
-					channel.close();
+//					key.cancel();
+//					channel.close();
 				}
 			}
+		}
+	}
+
+	public static void broadcast(Set<SocketChannel> channels, String message) throws IOException {
+		for (SocketChannel channel: channels) {
+			channel.write(StandardCharsets.UTF_8.encode(message));
 		}
 	}
 }

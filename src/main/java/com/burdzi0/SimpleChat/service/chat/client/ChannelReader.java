@@ -14,7 +14,7 @@ public class ChannelReader implements Runnable{
 
 	public ChannelReader(SocketChannel channel) {
 		this.channel = channel;
-		if (!channel.isOpen()) {
+		if (!channel.isConnected()) {
 			throw new IllegalStateException("ChannelReader: The channel is closed");
 		}
 		log.info("Channel should be opened");

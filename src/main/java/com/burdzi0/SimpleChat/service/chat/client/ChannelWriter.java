@@ -39,7 +39,7 @@ public class ChannelWriter implements Runnable {
 		CharBuffer charBuffer;
 		while (true) {
 			charBuffer = input.read();
-			charBuffer.flip();
+//			charBuffer.flip();
 			write(charBuffer);
 		}
 	}

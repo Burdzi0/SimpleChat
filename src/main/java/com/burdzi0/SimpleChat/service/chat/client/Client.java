@@ -17,10 +17,10 @@ public class Client {
 
 	public void runClient() throws IOException {
 		var channel = SocketChannel.open(new InetSocketAddress(12348));
-		channel.configureBlocking(false);
+		channel.configureBlocking(true);
 		ClientInput input = new ConsoleClientInput();
-		service.execute(new ChannelReader(channel));
-		service.execute(new ChannelWriter(channel, input));
+		new Thread(new ChannelReader(channel)).start();
+		new Thread(new ChannelWriter(channel, new ConsoleClientInput())).start();
 	}
 
 	public static void main(String[] args) throws IOException {
