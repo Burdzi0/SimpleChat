@@ -1,10 +1,13 @@
 package com.burdzi0.SimpleChat.service.chat.client;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
 
+@Slf4j
 public class ChannelReader implements Runnable{
 
 	private SocketChannel channel;
@@ -14,12 +17,12 @@ public class ChannelReader implements Runnable{
 		if (!channel.isOpen()) {
 			throw new IllegalStateException("ChannelReader: The channel is closed");
 		}
+		log.info("Channel should be opened");
 	}
 
 	private ByteBuffer read(ByteBuffer buffer) {
 		try {
 			channel.read(buffer);
-			buffer.flip();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -31,8 +34,11 @@ public class ChannelReader implements Runnable{
 		var byteBuffer = ByteBuffer.allocate(Client.BUFFER_SIZE);
 		while (true) {
 			read(byteBuffer);
-			System.out.println(new String(StandardCharsets.UTF_8.decode(byteBuffer).array()));
-			byteBuffer.clear();
+			if (byteBuffer.position() != 0) {
+				byteBuffer.flip();
+				System.out.println("Read: " + new String(StandardCharsets.UTF_8.decode(byteBuffer).array()));
+				byteBuffer.clear();
+			}
 		}
 	}
 }

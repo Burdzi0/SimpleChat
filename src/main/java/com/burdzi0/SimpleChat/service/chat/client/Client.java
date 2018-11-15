@@ -16,9 +16,14 @@ public class Client {
 	private ExecutorService service = Executors.newFixedThreadPool(2);
 
 	public void runClient() throws IOException {
-		var channel = SocketChannel.open(new InetSocketAddress(12345));
+		var channel = SocketChannel.open(new InetSocketAddress(12348));
+		channel.configureBlocking(false);
 		ClientInput input = new ConsoleClientInput();
 		service.execute(new ChannelReader(channel));
 		service.execute(new ChannelWriter(channel, input));
+	}
+
+	public static void main(String[] args) throws IOException {
+		new Client().runClient();
 	}
 }

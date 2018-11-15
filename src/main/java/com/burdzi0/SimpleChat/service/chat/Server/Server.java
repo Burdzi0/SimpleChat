@@ -9,6 +9,8 @@ import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
+import java.util.Set;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 public class Server {
 
@@ -26,7 +28,7 @@ public class Server {
 			var numberOfEvents = selector.select();
 			System.out.printf("Number of events: %d\n", numberOfEvents);
 
-			var selectedKeys = selector.selectedKeys();
+			Set<SelectionKey> selectedKeys = selector.selectedKeys();
 
 			for (SelectionKey key: selectedKeys) {
 				if (key.isAcceptable()) {
