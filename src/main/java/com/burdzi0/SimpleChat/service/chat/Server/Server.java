@@ -1,4 +1,4 @@
-package com.burdzi0.SimpleChat.service.chat;
+package com.burdzi0.SimpleChat.service.chat.Server;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
