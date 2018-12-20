@@ -12,18 +12,24 @@ import java.util.concurrent.Executors;
 
 public class Client {
 
+	private String authorName;
 	protected static final int BUFFER_SIZE = 5 * BinaryUnit.MEGABYTES.getCapacity();
-	private ExecutorService service = Executors.newFixedThreadPool(2);
+	private ExecutorService service = Executors.newCachedThreadPool();
+
+	public Client(String authorName) {
+		this.authorName = authorName;
+	}
 
 	public void runClient() throws IOException {
-		var channel = SocketChannel.open(new InetSocketAddress(12348));
+		var channel = SocketChannel.open(new InetSocketAddress(12345));
 		channel.configureBlocking(true);
-		ClientInput input = new ConsoleClientInput();
-		new Thread(new ChannelReader(channel)).start();
-		new Thread(new ChannelWriter(channel, new ConsoleClientInput())).start();
+		service.execute(new ChannelReader(channel));
+		ChannelWriter writer = new ChannelWriter(channel, new ConsoleClientInput());
+		writer.setAuthor(authorName);
+		service.execute(writer);
 	}
 
 	public static void main(String[] args) throws IOException {
-		new Client().runClient();
+		new Client("ABC").runClient();
 	}
 }

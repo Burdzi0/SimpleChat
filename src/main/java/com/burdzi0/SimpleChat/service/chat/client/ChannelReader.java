@@ -24,7 +24,7 @@ public class ChannelReader implements Runnable{
 		try {
 			channel.read(buffer);
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.warn("Exception caught while reading a message", e);
 		}
 		return buffer;
 	}
@@ -36,7 +36,7 @@ public class ChannelReader implements Runnable{
 			read(byteBuffer);
 			if (byteBuffer.position() != 0) {
 				byteBuffer.flip();
-				System.out.println("Read: " + new String(StandardCharsets.UTF_8.decode(byteBuffer).array()));
+				System.out.println(new String(StandardCharsets.UTF_8.decode(byteBuffer).array()));
 				byteBuffer.clear();
 			}
 		}

@@ -30,7 +30,7 @@ public class ConsoleClientInput implements ClientInput{
 		String line = "";
 		try {
 			log.info("Reading line");
-			line = reader.readLine();
+			while ((line = reader.readLine()).isBlank()) {}
 			log.info("Line read");
 		} catch (IOException e) {
 			e.printStackTrace();

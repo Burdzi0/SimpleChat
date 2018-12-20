@@ -13,6 +13,7 @@ public class ChannelWriter implements Runnable {
 
 	private SocketChannel channel;
 	private ClientInput input;
+	private String author;
 
 	public ChannelWriter(SocketChannel channel, ClientInput input) {
 		this.channel = channel;
@@ -26,7 +27,7 @@ public class ChannelWriter implements Runnable {
 	private void write(CharBuffer charBuffer) {
 		log.info("Trying to write");
 		try {
-			channel.write(StandardCharsets.UTF_8.encode(charBuffer));
+			channel.write(StandardCharsets.UTF_8.encode(author + ": " + charBuffer));
 			log.info("Written");
 			charBuffer.clear();
 		} catch (IOException e) {
@@ -42,5 +43,9 @@ public class ChannelWriter implements Runnable {
 //			charBuffer.flip();
 			write(charBuffer);
 		}
+	}
+
+	public void setAuthor(String authorName) {
+		this.author = authorName;
 	}
 }
