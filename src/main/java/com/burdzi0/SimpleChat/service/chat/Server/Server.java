@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.net.StandardSocketOptions;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.channels.SelectionKey;
@@ -12,21 +11,11 @@ import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.concurrent.ConcurrentSkipListSet;
-import java.util.concurrent.CopyOnWriteArraySet;
 
 @Slf4j
 public class Server {
-
-	public static void main(String[] args) throws IOException {
-		new Server().serve(new InetSocketAddress(12345));
-	}
 
 	public void serve(InetSocketAddress address) throws IOException {
 		var serverSocketChannel = ServerSocketChannel.open();
@@ -47,6 +36,7 @@ public class Server {
 		Iterator<SelectionKey> iter;
 
 		log.info("Listening...");
+
 		while (true) {
 			log.info("- Select -");
 			selected = selector.select();
@@ -61,7 +51,7 @@ public class Server {
 				log.info("Processing key " + key.toString());
 
 				if (key.isAcceptable()) {
-					handleAcception(selector, key);
+					handleAcceptation(selector, key);
 				}
 				if (key.isReadable()) {
 					handleRead(selector, key);
@@ -75,17 +65,32 @@ public class Server {
 		var channel = (SocketChannel) key.channel();
 		log.info("Obtained channel");
 		var buffer = ByteBuffer.allocate(1024);
-		channel.read(buffer);
+		var read = channel.read(buffer);
+		if (read == -1) {
+			disconnectClient(key, channel);
+		} else {
+			var message = readData(buffer);
+			broadcast(selector, key, message);
+		}
+	}
+
+	private String readData(ByteBuffer buffer) {
 		log.info("Read from channel");
 		buffer.flip();
 		CharBuffer charBuffer = StandardCharsets.UTF_8.decode(buffer);
-		System.out.printf("Message: %s%n", charBuffer.toString());
-		broadcast(selector, key, charBuffer.toString());
+		var message = charBuffer.toString();
+		System.out.printf("%s%n", message);
 		buffer.clear();
 		charBuffer.clear();
+		return message;
 	}
 
-	private void handleAcception(Selector selector, SelectionKey key) throws IOException {
+	private void disconnectClient(SelectionKey key, SocketChannel channel) throws IOException {
+		log.info("Client [" + channel.getRemoteAddress() + "] disconnected");
+		key.cancel();
+	}
+
+	private void handleAcceptation(Selector selector, SelectionKey key) throws IOException {
 		log.info("Key is acceptable");
 		var serverChannel = (ServerSocketChannel) key.channel();
 		log.info("Obtained server channel");
@@ -99,10 +104,6 @@ public class Server {
 		log.info("Processing complete");
 	}
 
-	private static String getCurrentDate() {
-		return LocalDateTime.now().format(DateTimeFormatter.BASIC_ISO_DATE);
-	}
-
 	private void broadcast(Selector selector, SelectionKey author, String msg) throws IOException {
 		ByteBuffer messageBuffer = ByteBuffer.wrap(msg.getBytes());
 		for (SelectionKey key : selector.keys()) {
@@ -113,6 +114,4 @@ public class Server {
 			}
 		}
 	}
-
-
 }
