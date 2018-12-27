@@ -1,6 +1,7 @@
 package com.burdzi0.SimpleChat.service.chat.Server;
 
-import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -14,8 +15,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.Set;
 
-@Slf4j
+
 public class Server {
+
+	private static Logger log = LogManager.getLogger();
 
 	public void serve(InetSocketAddress address) throws IOException {
 		var serverSocketChannel = ServerSocketChannel.open();
