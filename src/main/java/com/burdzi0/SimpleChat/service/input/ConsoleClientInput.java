@@ -1,16 +1,16 @@
 package com.burdzi0.SimpleChat.service.input;
 
-import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.BufferedReader;
-import java.io.Console;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.CharBuffer;
 
-@Slf4j
 public class ConsoleClientInput implements ClientInput{
 
+	private static Logger log = LogManager.getLogger();
 	private BufferedReader reader;
 
 	@Override

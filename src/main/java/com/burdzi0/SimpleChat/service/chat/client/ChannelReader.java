@@ -1,15 +1,17 @@
 package com.burdzi0.SimpleChat.service.chat.client;
 
-import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
 
-@Slf4j
+
 public class ChannelReader implements Runnable{
 
+	private static Logger log = LogManager.getLogger();
 	private SocketChannel channel;
 
 	public ChannelReader(SocketChannel channel) {
